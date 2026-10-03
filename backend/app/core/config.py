@@ -31,8 +31,8 @@ class Settings(BaseSettings):
     CORS_ORIGINS: str = "http://localhost:5173"
 
     # ---------- Database ----------
-    DATABASE_URL: str = "postgresql+asyncpg://recruitflow:recruitflow_dev@localhost:5432/recruitflow"
-    DATABASE_URL_SYNC: str = "postgresql://recruitflow:recruitflow_dev@localhost:5432/recruitflow"
+    DATABASE_URL: str = "sqlite+aiosqlite:///./recruitflow.db"
+    DATABASE_URL_SYNC: str = ""
 
     # ---------- Authentication ----------
     JWT_SECRET_KEY: str = "change-this-to-a-random-64-char-string"
