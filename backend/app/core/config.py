@@ -79,31 +79,37 @@ class Settings(BaseSettings):
 
     @property
     def async_database_url(self) -> str:
-        """Ensure the URL uses the asyncpg driver for async SQLAlchemy."""
+        """Ensure the URL uses the asyncpg driver and clean SSL params for asyncpg."""
         url = self.DATABASE_URL
         if url.startswith("postgres://"):
             url = url.replace("postgres://", "postgresql+asyncpg://", 1)
         elif url.startswith("postgresql://") and not url.startswith("postgresql+"):
             url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
+
+        # asyncpg does not support libpq's 'sslmode' or 'channel_binding' query parameters.
+        # It expects 'ssl=require' or 'ssl=true'.
+        if "sslmode=" in url or "channel_binding=" in url:
+            from urllib.parse import urlsplit, urlunsplit, parse_qs, urlencode
+            parts = urlsplit(url)
+            query_dict = parse_qs(parts.query)
+            query_dict.pop("sslmode", None)
+            query_dict.pop("channel_binding", None)
+            query_dict["ssl"] = ["require"]
+            new_query = urlencode(query_dict, doseq=True)
+            url = urlunsplit((parts.scheme, parts.netloc, parts.path, new_query, parts.fragment))
+
         return url
 
     @property
     def sync_database_url(self) -> str:
-        """Return synchronous database URL for Alembic migrations."""
-        if self.DATABASE_URL_SYNC:
-            url = self.DATABASE_URL_SYNC
-            if url.startswith("postgres://"):
-                url = url.replace("postgres://", "postgresql://", 1)
-            elif url.startswith("postgresql+asyncpg://"):
-                url = url.replace("postgresql+asyncpg://", "postgresql://", 1)
-            return url
-        url = self.DATABASE_URL
-        if url.startswith("postgresql+asyncpg://"):
-            return url.replace("postgresql+asyncpg://", "postgresql://", 1)
-        elif url.startswith("postgres://"):
-            return url.replace("postgres://", "postgresql://", 1)
+        """Return synchronous database URL for Alembic migrations (psycopg2)."""
+        url = self.DATABASE_URL_SYNC if self.DATABASE_URL_SYNC else self.DATABASE_URL
+        if url.startswith("postgres://"):
+            url = url.replace("postgres://", "postgresql://", 1)
+        elif url.startswith("postgresql+asyncpg://"):
+            url = url.replace("postgresql+asyncpg://", "postgresql://", 1)
         elif url.startswith("sqlite+aiosqlite://"):
-            return url.replace("sqlite+aiosqlite://", "sqlite://", 1)
+            url = url.replace("sqlite+aiosqlite://", "sqlite://", 1)
         return url
 
     @field_validator("JWT_SECRET_KEY")
