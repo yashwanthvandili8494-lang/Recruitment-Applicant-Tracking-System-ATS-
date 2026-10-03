@@ -63,6 +63,23 @@ from app.api.v1.router import api_router  # noqa: E402
 app.include_router(api_router, prefix="/api/v1")
 
 
+# ───────────────────── Root Endpoint ─────────────────────
+@app.get("/", tags=["Root"])
+async def root():
+    """Root endpoint providing service metadata and API links."""
+    return {
+        "service": "RecruitFlow ATS API",
+        "status": "online",
+        "version": "1.0.0",
+        "documentation": "/docs",
+        "endpoints": {
+            "health": "/health",
+            "readiness": "/ready",
+            "public_jobs": "/api/v1/jobs/public",
+        },
+    }
+
+
 # ───────────────────── Health Checks ─────────────────────
 @app.get("/health", tags=["Health"])
 async def health_check():
