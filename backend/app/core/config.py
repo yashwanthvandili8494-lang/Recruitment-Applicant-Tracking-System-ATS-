@@ -65,8 +65,9 @@ class Settings(BaseSettings):
 
     @property
     def cors_origins_list(self) -> List[str]:
-        """Parse CORS origins from comma-separated string."""
-        return [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+        """Parse CORS origins from comma-separated string, filtering wildcard '*' to prevent browser rejection with credentials."""
+        origins = [origin.strip() for origin in self.CORS_ORIGINS.split(",") if origin.strip()]
+        return [o for o in origins if o != "*"]
 
     @property
     def max_upload_size_bytes(self) -> int:
