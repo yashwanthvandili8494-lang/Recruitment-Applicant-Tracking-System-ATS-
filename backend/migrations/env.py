@@ -25,7 +25,7 @@ config = context.config
 
 # Override sqlalchemy.url from environment
 settings = get_settings()
-config.set_main_option("sqlalchemy.url", settings.DATABASE_URL_SYNC)
+config.set_main_option("sqlalchemy.url", settings.sync_database_url)
 
 if config.config_file_name is not None:
     fileConfig(config.config_file_name)

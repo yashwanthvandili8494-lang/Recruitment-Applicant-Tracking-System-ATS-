@@ -16,7 +16,7 @@ from app.core.config import get_settings
 settings = get_settings()
 
 # Async engine for application use
-is_sqlite = settings.DATABASE_URL.startswith("sqlite")
+is_sqlite = settings.async_database_url.startswith("sqlite")
 engine_kwargs = {"echo": settings.DEBUG}
 if is_sqlite:
     engine_kwargs["connect_args"] = {"check_same_thread": False}
@@ -28,7 +28,7 @@ else:
         "pool_recycle": 300,
     })
 
-engine = create_async_engine(settings.DATABASE_URL, **engine_kwargs)
+engine = create_async_engine(settings.async_database_url, **engine_kwargs)
 
 # Async session factory
 async_session_factory = async_sessionmaker(
