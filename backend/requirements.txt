@@ -1,0 +1,47 @@
+# Web framework
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+python-multipart==0.0.19
+
+# Database
+sqlalchemy[asyncio]==2.0.36
+asyncpg==0.30.0
+psycopg2-binary==2.9.10
+alembic==1.14.1
+greenlet==3.1.1
+
+# Authentication
+pyjwt==2.10.1
+bcrypt==4.2.1
+python-jose[cryptography]==3.3.0
+
+# Validation & serialization
+pydantic==2.10.4
+pydantic-settings==2.7.1
+email-validator==2.2.0
+
+# Background jobs
+redis==5.2.1
+rq==2.1.0
+
+# File processing
+PyMuPDF==1.25.3
+python-docx==1.1.2
+python-magic==0.4.27
+
+# Email
+aiosmtplib==3.0.2
+jinja2==3.1.5
+
+# HTTP client
+httpx==0.28.1
+
+# Testing
+pytest==8.3.4
+pytest-asyncio==0.25.0
+pytest-cov==6.0.0
+httpx==0.28.1
+factory-boy==3.3.1
+
+# Utilities
+python-dotenv==1.0.1
