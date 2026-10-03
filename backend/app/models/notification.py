@@ -13,8 +13,7 @@ from app.models.enums import NotificationType, DeliveryStatus
 class Notification(Base):
     __tablename__ = "notifications"
     __table_args__ = (
-        Index("ix_notifications_user", "user_id"),
-        Index("ix_notifications_status", "delivery_status"),
+        Index("ix_notifications_user_status", "user_id", "status"),
     )
 
     id: Mapped[str] = mapped_column(
@@ -24,22 +23,23 @@ class Notification(Base):
         String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
     type: Mapped[str] = mapped_column(String(50), nullable=False)
-    subject: Mapped[str] = mapped_column(String(500), nullable=False)
-    body: Mapped[str | None] = mapped_column(Text, nullable=True)
-    delivery_status: Mapped[str] = mapped_column(
-        String(50), nullable=False, default=DeliveryStatus.PENDING.value
+    channel: Mapped[str] = mapped_column(String(50), nullable=False, default="email")
+    subject: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    content: Mapped[str] = mapped_column(Text, nullable=False, default="")
+    status: Mapped[str] = mapped_column(
+        String(50), nullable=False, default="pending"
     )
-    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     retry_count: Mapped[int] = mapped_column(default=0)
+    error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
+    read_at: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True), nullable=True
+    )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), default=lambda: datetime.now(timezone.utc)
-    )
-    sent_at: Mapped[datetime | None] = mapped_column(
-        DateTime(timezone=True), nullable=True
     )
 
     # Relationships
     user = relationship("User", back_populates="notifications")
 
     def __repr__(self) -> str:
-        return f"<Notification {self.type} → {self.user_id} ({self.delivery_status})>"
+        return f"<Notification {self.type} → {self.user_id} ({self.status})>"

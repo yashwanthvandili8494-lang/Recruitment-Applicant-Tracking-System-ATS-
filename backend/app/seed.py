@@ -217,6 +217,8 @@ async def seed():
                 concerns="Could improve on system design documentation practices.",
                 recommendation="strong_yes",
                 overall_notes="Highly recommend for next round. Candidate demonstrated exceptional technical depth.",
+                submitted_at=now - timedelta(days=2),
+                updated_at=now - timedelta(days=2),
             )
             db.add(feedback)
 

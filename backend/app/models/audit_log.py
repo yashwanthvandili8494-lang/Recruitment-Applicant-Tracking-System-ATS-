@@ -12,10 +12,8 @@ from app.core.database import Base
 class AuditLog(Base):
     __tablename__ = "audit_logs"
     __table_args__ = (
-        Index("ix_audit_org", "organization_id"),
-        Index("ix_audit_actor", "actor_user_id"),
-        Index("ix_audit_resource", "resource_type", "resource_id"),
-        Index("ix_audit_created", "created_at"),
+        Index("ix_audit_logs_org_created", "organization_id", "created_at"),
+        Index("ix_audit_logs_user", "user_id"),
     )
 
     id: Mapped[str] = mapped_column(
@@ -25,13 +23,13 @@ class AuditLog(Base):
         String(36), ForeignKey("organizations.id", ondelete="SET NULL"), nullable=True
     )
     actor_user_id: Mapped[str | None] = mapped_column(
-        String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
+        "user_id", String(36), ForeignKey("users.id", ondelete="SET NULL"), nullable=True
     )
     action: Mapped[str] = mapped_column(String(100), nullable=False)
     resource_type: Mapped[str] = mapped_column(String(100), nullable=False)
     resource_id: Mapped[str | None] = mapped_column(String(36), nullable=True)
     metadata_json: Mapped[dict | None] = mapped_column(
-        "metadata", JSON, nullable=True,
+        "details", JSON, nullable=True,
         comment="Non-sensitive contextual data about the action",
     )
     ip_address: Mapped[str | None] = mapped_column(String(45), nullable=True)

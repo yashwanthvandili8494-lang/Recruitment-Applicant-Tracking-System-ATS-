@@ -26,7 +26,7 @@ class InterviewParticipant(Base):
     user_id: Mapped[str] = mapped_column(
         String(36), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
     )
-    role: Mapped[str | None] = mapped_column(String(50), nullable=True, default="interviewer")
+    role: Mapped[str] = mapped_column(String(50), nullable=False, default="interviewer")
 
     # Relationships
     interview = relationship("Interview", back_populates="participants")
