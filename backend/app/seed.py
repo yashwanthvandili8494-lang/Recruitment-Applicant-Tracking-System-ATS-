@@ -18,6 +18,7 @@ from datetime import datetime, timezone, timedelta, date
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from sqlalchemy import select
 from app.core.config import get_settings
 from app.core.database import async_session_factory, engine, Base
 from app.core.security import hash_password
@@ -38,6 +39,12 @@ async def seed():
 
     async with async_session_factory() as db:
         try:
+            # Check if database has already been seeded
+            existing_org = await db.execute(select(Organization).where(Organization.slug == "techcorp"))
+            if existing_org.scalar_one_or_none():
+                print("Database already seeded. Skipping.")
+                return
+
             # ───── Organization ─────
             org = Organization(
                 name="TechCorp Solutions",

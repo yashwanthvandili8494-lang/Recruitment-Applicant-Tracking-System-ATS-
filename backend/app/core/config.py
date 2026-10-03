@@ -86,6 +86,10 @@ class Settings(BaseSettings):
         elif url.startswith("postgresql://") and not url.startswith("postgresql+"):
             url = url.replace("postgresql://", "postgresql+asyncpg://", 1)
 
+        # For Neon, strip -pooler to connect directly and prevent PgBouncer transactional limitations
+        if "-pooler." in url:
+            url = url.replace("-pooler.", ".", 1)
+
         # asyncpg does not support libpq's 'sslmode' or 'channel_binding' query parameters.
         # It expects 'ssl=require' or 'ssl=true'.
         if "sslmode=" in url or "channel_binding=" in url:
@@ -110,6 +114,11 @@ class Settings(BaseSettings):
             url = url.replace("postgresql+asyncpg://", "postgresql://", 1)
         elif url.startswith("sqlite+aiosqlite://"):
             url = url.replace("sqlite+aiosqlite://", "sqlite://", 1)
+
+        # Strip Neon -pooler for Alembic transactional DDL
+        if "-pooler." in url:
+            url = url.replace("-pooler.", ".", 1)
+
         return url
 
     @field_validator("JWT_SECRET_KEY")
